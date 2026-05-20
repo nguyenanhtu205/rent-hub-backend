@@ -5,17 +5,19 @@ using Application.Features.Auth.Commands.Register;
 
 namespace Web.Endpoints;
 
+public record AccessTokenResponse(string AccessToken);
+
 public class Auth : IEndpointGroup
 {
     public static void Map(RouteGroupBuilder groupBuilder)
     {
         groupBuilder.MapPost(Register, "register")
-            .Produces<RegisterResponse>()
+            .Produces<AccessTokenResponse>()
             .Produces(StatusCodes.Status409Conflict)
             .RequireRateLimiting("post");
 
         groupBuilder.MapPost(Login, "login")
-            .Produces<LoginResponse>()
+            .Produces<AccessTokenResponse>()
             .RequireRateLimiting("post");
 
         groupBuilder.MapPost(Logout, "logout")
@@ -23,6 +25,7 @@ public class Auth : IEndpointGroup
             .RequireRateLimiting("post");
 
         groupBuilder.MapPost(RefreshAccessToken, "refresh-token")
+            .Produces<AccessTokenResponse>()
             .RequireRateLimiting("post");
     }
 
