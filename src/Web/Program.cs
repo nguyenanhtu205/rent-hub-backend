@@ -25,9 +25,12 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseCors(static builder =>
-    builder.AllowAnyMethod()
+    builder
+        .WithOrigins(" http://localhost:5173")
+        .AllowAnyMethod()
         .AllowAnyHeader()
-        .AllowAnyOrigin());
+        .AllowCredentials()
+);
 
 app.UseExceptionHandler();
 

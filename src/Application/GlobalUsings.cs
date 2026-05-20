@@ -1,6 +1,9 @@
 ﻿global using Application.Common.Interfaces;
+global using Application.Common.Exceptions;
+global using Domain.Enums;
 global using Domain.Entities;
 global using MediatR;
 global using Microsoft.Extensions.Logging;
+global using Microsoft.EntityFrameworkCore;
 global using FluentValidation;
 global using FluentValidation.Results;

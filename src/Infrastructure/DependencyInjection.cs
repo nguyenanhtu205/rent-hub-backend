@@ -1,6 +1,7 @@
 ﻿using Ardalis.GuardClauses;
 using Infrastructure.Data;
 using Infrastructure.Data.Interceptors;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,5 +34,13 @@ public static class DependencyInjection
             provider.GetRequiredService<ApplicationDbContext>());
 
         builder.Services.AddSingleton(TimeProvider.System);
+
+        builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+
+        builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+        builder.Services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
+
+        builder.Services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
     }
 }

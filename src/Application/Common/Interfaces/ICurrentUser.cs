@@ -3,4 +3,6 @@
 public interface ICurrentUser
 {
     string? Id { get; }
+
+    string? AccountId { get; }
 }
