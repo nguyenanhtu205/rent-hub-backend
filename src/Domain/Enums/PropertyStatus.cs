@@ -3,5 +3,6 @@
 public enum PropertyStatus
 {
     NotSurveyed, 
-    Surveyed
+    Surveyed,
+    InActive
 }

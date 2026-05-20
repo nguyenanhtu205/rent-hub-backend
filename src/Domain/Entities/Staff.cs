@@ -8,8 +8,6 @@ public class Staff : BaseEntity
     
     public required StaffRole Role { get; set; }
     
-    public ICollection<District> WorkingAreas { get; private set; } = new List<District>();
-    
     public int AccountId { get; set; }
     
     public Account? Account { get; set; }
@@ -21,4 +19,6 @@ public class Staff : BaseEntity
     public ICollection<RentalTransaction> RentalTransactions { get; private set; } = new List<RentalTransaction>();
     
     public ICollection<WorkHistory> WorkHistories { get; private set; } = new List<WorkHistory>();
+    
+    public ICollection<StaffWorkingArea> WorkingAreas { get; private set; } = new List<StaffWorkingArea>();
 }

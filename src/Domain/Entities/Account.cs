@@ -13,4 +13,6 @@ public class Account : BaseEntity
     public Staff? Staff { get; set; }
     
     public Customer? Customer { get; set; }
+    
+    public ICollection<RefreshToken> RefreshTokens { get; private set; } = new List<RefreshToken>();
 }
