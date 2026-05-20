@@ -1,0 +1,35 @@
+﻿namespace Domain.Enums;
+
+public enum District
+{
+    BaDinh,
+    HoanKiem,
+    TayHo,
+    LongBien,
+    CauGiay,
+    DongDa,
+    HaiBaTrung,
+    HoangMai,
+    ThanhXuan,
+    HaDong,
+    BacTuLiem,
+    NamTuLiem,
+    SocSon,
+    DongAnh,
+    GiaLam,
+    ThanhTri,
+    MeLinh,
+    BaVi,
+    PhucTho,
+    DanPhuong,
+    HoaiDuc,
+    QuocOai,
+    ThachThat,
+    ChuongMy,
+    ThanhOai,
+    ThuongTin,
+    PhuXuyen,
+    UngHoa,
+    MyDuc,
+    SonTay
+}
