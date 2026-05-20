@@ -1,23 +1,30 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+﻿# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["src/Web/Web.csproj", "src/Web/"]
-RUN dotnet restore "src/Web/Web.csproj"
+
+COPY *.sln .
+COPY src/Domain/*.csproj src/Domain/
+COPY src/Application/*.csproj src/Application/
+COPY src/Infrastructure/*.csproj src/Infrastructure/
+COPY src/Web/*.csproj src/Web/
+
+RUN dotnet restore src/Web/Web.csproj
+
 COPY . .
-WORKDIR "/src/src/Web"
-RUN dotnet build "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish src/Web/Web.csproj \
+    -c Release \
+    -o /app/publish \
+    /p:UseAppHost=false
 
-FROM base AS final
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+COPY --from=build /app/publish .
+
+ENV ASPNETCORE_URLS=http://+:10000
+
+EXPOSE 10000
+
 ENTRYPOINT ["dotnet", "Web.dll"]
