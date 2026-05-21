@@ -16,12 +16,12 @@ public class JwtProvider(IConfiguration configuration) : IJwtProvider
 
         Claim[] claims =
         [
-            new(ClaimTypes.NameIdentifier, userId.ToString()),
+            new("sub", userId.ToString()),
             new("accountId", accountId.ToString()),
-            new(ClaimTypes.Role, role),
-            new Claim("name", name),
-            new Claim("phone", phone),
-            new Claim("email", email)
+            new("role", role),
+            new("name", name),
+            new("phone", phone),
+            new("email", email)
         ];
 
         SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(key!));

@@ -7,4 +7,10 @@ public interface ICurrentUser
     string? AccountId { get; }
 
     string? Role { get; }
+    
+    string? Name { get; }
+    
+    string? Phone { get; }
+    
+    string? Email { get; }
 }

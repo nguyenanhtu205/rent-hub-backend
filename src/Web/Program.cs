@@ -26,7 +26,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors(static builder =>
     builder
-        .WithOrigins(" http://localhost:5173")
+        .WithOrigins("http://localhost:5173")
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
