@@ -8,7 +8,7 @@ namespace Infrastructure.Services;
 
 public class JwtProvider(IConfiguration configuration) : IJwtProvider
 {
-    public string Generate(int userId, int accountId, string role)
+    public string Generate(int userId, int accountId, string role, string name, string phone, string email)
     {
         string? issuer = configuration["Jwt:Issuer"];
         string? audience = configuration["Jwt:Audience"];
@@ -18,7 +18,10 @@ public class JwtProvider(IConfiguration configuration) : IJwtProvider
         [
             new(ClaimTypes.NameIdentifier, userId.ToString()),
             new("accountId", accountId.ToString()),
-            new(ClaimTypes.Role, role)
+            new(ClaimTypes.Role, role),
+            new Claim("name", name),
+            new Claim("phone", phone),
+            new Claim("email", email)
         ];
 
         SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(key!));

@@ -36,6 +36,8 @@ public class LoginCommandHandler(
 
         int userId;
         string role;
+        string name;
+        string phone;
 
         if (account.Role == AccountRole.Staff)
         {
@@ -46,6 +48,8 @@ public class LoginCommandHandler(
 
             userId = account.Staff.Id;
             role = account.Staff.Role.ToString();
+            name = account.Staff.Name;
+            phone = account.Staff.Phone;
         }
         else
         {
@@ -56,9 +60,11 @@ public class LoginCommandHandler(
 
             userId = account.Customer.Id;
             role = account.Customer.Type.ToString();
+            name = account.Customer.Name;
+            phone = account.Customer.Phone;
         }
 
-        string accessToken = jwtProvider.Generate(userId, account.Id, role);
+        string accessToken = jwtProvider.Generate(userId, account.Id, role, name, phone, account.Email);
 
         List<RefreshToken> existingTokens = await context.RefreshTokens
             .Where(x => x.AccountId == account.Id && !x.IsRevoked)

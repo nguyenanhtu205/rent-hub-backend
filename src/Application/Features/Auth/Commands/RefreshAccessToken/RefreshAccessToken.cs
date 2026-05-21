@@ -47,6 +47,8 @@ public class RefreshAccessTokenCommandHandler(
 
         int userId;
         string role;
+        string name;
+        string phone;
 
         if (account.Role == AccountRole.Staff)
         {
@@ -57,6 +59,8 @@ public class RefreshAccessTokenCommandHandler(
 
             userId = account.Staff.Id;
             role = account.Staff.Role.ToString();
+            name = account.Staff.Name;
+            phone = account.Staff.Phone;
         }
         else
         {
@@ -67,6 +71,8 @@ public class RefreshAccessTokenCommandHandler(
 
             userId = account.Customer.Id;
             role = account.Customer.Type.ToString();
+            name = account.Customer.Name;
+            phone = account.Customer.Phone;
         }
 
         string newRawRefreshToken = refreshTokenGenerator.Generate();
@@ -85,7 +91,7 @@ public class RefreshAccessTokenCommandHandler(
         context.RefreshTokens.Add(newRefreshToken);
         await context.SaveChangesAsync(cancellationToken);
 
-        string accessToken = jwtProvider.Generate(userId, account.Id, role);
+        string accessToken = jwtProvider.Generate(userId, account.Id, role, name, phone, account.Email);
 
         return new RefreshAccessTokenResponse(accessToken, newRawRefreshToken);
     }

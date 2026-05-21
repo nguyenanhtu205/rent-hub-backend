@@ -59,7 +59,8 @@ public class RegisterCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        string accessToken = jwtProvider.Generate(customer.Id, account.Id, request.CustomerType.ToString());
+        string accessToken = jwtProvider.Generate(customer.Id, account.Id, request.CustomerType.ToString(),
+            request.Name, request.Phone, request.Email);
 
         return new RegisterResponse(accessToken, rawRefreshToken);
     }
