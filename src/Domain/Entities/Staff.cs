@@ -8,6 +8,8 @@ public class Staff : BaseEntity
     
     public required StaffRole Role { get; set; }
     
+    public int ActiveWorkCount { get; set; }
+    
     public int AccountId { get; set; }
     
     public Account? Account { get; set; }

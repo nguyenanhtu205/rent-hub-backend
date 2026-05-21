@@ -27,6 +27,10 @@ public class StaffConfiguration : IEntityTypeConfiguration<Staff>
             .HasConversion<string>()
             .HasMaxLength(50)
             .IsRequired();
+
+        builder.Property(x => x.ActiveWorkCount)
+            .HasColumnName("active_work_count")
+            .IsRequired();
         
         builder.Property(x => x.AccountId)
             .HasColumnName("account_id")
