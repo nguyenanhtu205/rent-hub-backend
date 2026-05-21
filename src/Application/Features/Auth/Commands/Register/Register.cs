@@ -50,7 +50,7 @@ public class RegisterCommandHandler(
         RefreshToken refreshToken = new()
         {
             Token = hashedRefreshToken,
-            AccountId = account.Id,
+            Account = account,
             ExpiredAt = DateTimeOffset.UtcNow.AddDays(7),
             IsRevoked = false
         };
