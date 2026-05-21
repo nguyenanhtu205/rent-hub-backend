@@ -19,7 +19,14 @@ public static class DependencyInjection
 
         builder.Services.AddCustomRateLimiter();
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddAuthorizationBuilder()
+            .AddPolicy("Lessor", policy => policy.RequireRole("Lessor"))
+            .AddPolicy("Renter", policy => policy.RequireRole("Renter"))
+            .AddPolicy("Manager", policy => policy.RequireRole("Manager"))
+            .AddPolicy("Surveyor", policy => policy.RequireRole("Surveyor"))
+            .AddPolicy("FinanceStaff", policy => policy.RequireRole("FinanceStaff"))
+            .AddPolicy("LegalStaff", policy => policy.RequireRole("LegalStaff"))
+            .AddPolicy("Broker", policy => policy.RequireRole("Broker"));
 
         builder.Services.AddEndpointsApiExplorer();
 

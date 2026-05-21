@@ -8,4 +8,6 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
     public string? Id => httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
     public string? AccountId => httpContextAccessor.HttpContext?.User.FindFirstValue("accountId");
+
+    public string? Role => httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.Role);
 }

@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
+using Supabase;
+using SupabaseOptions = Infrastructure.Options.SupabaseOptions;
 
 namespace Infrastructure;
 
@@ -42,5 +45,17 @@ public static class DependencyInjection
         builder.Services.AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>();
 
         builder.Services.AddScoped<IRefreshTokenHasher, RefreshTokenHasher>();
+
+        builder.Services.Configure<SupabaseOptions>(builder.Configuration.GetSection(SupabaseOptions.SectionName));
+
+        builder.Services.AddSingleton<Client>(sp =>
+        {
+            SupabaseOptions options = sp.GetRequiredService<IOptions<SupabaseOptions>>().Value;
+            Client client = new(options.Url, options.Key);
+            client.InitializeAsync().GetAwaiter().GetResult();
+            return client;
+        });
+
+        builder.Services.AddScoped<IStorageService, SupabaseStorageService>();
     }
 }
