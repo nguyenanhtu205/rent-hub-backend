@@ -21,6 +21,14 @@ public class RegisterCommandHandler(
 {
     public async Task<RegisterResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
+        bool emailExists = await context.Accounts
+            .AnyAsync(x => x.Email == request.Email, cancellationToken);
+
+        if (emailExists)
+        {
+            throw new ConflictException("Email already exists");
+        }
+        
         string hashedPassword = passwordHasher.Hash(request.Password);
 
         Account account = new()
