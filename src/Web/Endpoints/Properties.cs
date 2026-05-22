@@ -17,7 +17,7 @@ public class Properties : IEndpointGroup
             .RequireRateLimiting("post")
             .DisableAntiforgery();
 
-        groupBuilder.MapGet(GetPropertyForCurrentSurveyor)
+        groupBuilder.MapGet(GetPropertyForCurrentSurveyor, "for-surveyor")
             .Produces<List<PropertyForSurveyorVm>>()
             .RequireAuthorization("Surveyor")
             .RequireRateLimiting("get");
