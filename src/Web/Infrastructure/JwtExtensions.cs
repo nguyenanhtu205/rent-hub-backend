@@ -23,7 +23,8 @@ public static class JwtExtensions
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(configuration["Jwt:SigningKey"]!))
+                        Encoding.UTF8.GetBytes(configuration["Jwt:SigningKey"]!)),
+                    RoleClaimType = "role"
                 };
 
                 options.MapInboundClaims = false;
