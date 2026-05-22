@@ -1,5 +1,6 @@
 ﻿using Application.Features.WorkHistories.Commands.CreateSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveySchedule;
+using Application.Features.WorkHistories.Queries.UpdateSurveySchedule;
 
 namespace Web.Endpoints;
 
@@ -16,6 +17,11 @@ public class WorkHistory : IEndpointGroup
             .RequireAuthorization("Surveyor")
             .Produces<List<SurveyScheduleVm>>()
             .RequireRateLimiting("get");
+
+        groupBuilder.MapPut(UpdateSurveySchedule, "survey-schedule")
+            .RequireAuthorization("Surveyor")
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireRateLimiting("put");
     }
 
     [EndpointSummary("Create survey schedule")]
@@ -37,5 +43,17 @@ public class WorkHistory : IEndpointGroup
     {
         List<SurveyScheduleVm> surveySchedules = await sender.Send(new GetSurveyScheduleQuery(), cancellationToken);
         return Results.Ok(surveySchedules);
+    }
+
+    [EndpointSummary("Update survey schedule")]
+    [EndpointDescription(
+        "Update the survey schedule for a property. This will mark the work history as completed and update the property status based on whether the survey passed or not.")]
+    public static async Task<IResult> UpdateSurveySchedule(
+        UpdateSurveyScheduleCommand command,
+        ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
     }
 }
