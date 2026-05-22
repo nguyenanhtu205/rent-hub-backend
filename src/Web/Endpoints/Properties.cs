@@ -19,7 +19,7 @@ public class Properties : IEndpointGroup
 
         groupBuilder.MapGet(GetPropertyForCurrentSurveyor)
             .Produces<List<PropertyForSurveyorVm>>()
-            .RequireAuthorization()
+            .RequireAuthorization("Surveyor")
             .RequireRateLimiting("get");
     }
 
