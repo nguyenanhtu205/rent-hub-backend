@@ -62,6 +62,7 @@ public class CreatePropertyCommandHandler(
             Address = request.Address,
             District = request.District,
             Status = PropertyStatus.NotSurveyed,
+            Price = request.Rooms.Count > 0 ? request.Rooms.Min(r => r.Price) : 0,
             StaffId = staffId,
             CustomerId = int.Parse(userId)
         };

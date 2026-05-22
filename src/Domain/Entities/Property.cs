@@ -16,6 +16,8 @@ public class Property : BaseEntity
     
     public required PropertyStatus Status { get; set; }
     
+    public double Price { get; set; }
+    
     public int StaffId { get; set; }
     
     public int CustomerId { get; set; }

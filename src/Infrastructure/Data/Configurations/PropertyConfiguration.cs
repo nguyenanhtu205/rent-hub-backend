@@ -48,6 +48,10 @@ public class PropertyConfiguration : IEntityTypeConfiguration<Property>
             .HasMaxLength(50)
             .IsRequired();
         
+        builder.Property(x => x.Price)
+            .HasColumnName("price")
+            .IsRequired();
+        
         builder.Property(x => x.StaffId)
             .HasColumnName("staff_id")
             .IsRequired();
