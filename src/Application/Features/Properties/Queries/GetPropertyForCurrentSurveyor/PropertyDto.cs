@@ -16,8 +16,6 @@ public class PropertyDto
 
     public required District District { get; init; }
 
-    public required PropertyStatus Status { get; init; }
-
     private class Mapping : Profile
     {
         public Mapping()

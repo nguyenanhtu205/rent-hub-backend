@@ -26,7 +26,7 @@ public class GetPropertyForCurrentSurveyorQueryHandler(
 
         PropertyDto? propertyDto = await context.Properties
             .AsNoTracking()
-            .Where(p => p.StaffId == int.Parse(staffId))
+            .Where(p => p.StaffId == int.Parse(staffId) && p.Status == PropertyStatus.NotSurveyed)
             .ProjectTo<PropertyDto>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
 
