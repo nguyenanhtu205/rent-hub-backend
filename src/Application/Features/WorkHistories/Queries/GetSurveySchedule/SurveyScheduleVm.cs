@@ -2,6 +2,8 @@
 
 public class SurveyScheduleVm
 {
+    public int Id { get; init; }
+    
     public required string CustomerName { get; init; }
 
     public required string CustomerPhone { get; init; }

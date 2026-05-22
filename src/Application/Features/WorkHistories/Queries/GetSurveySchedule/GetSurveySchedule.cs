@@ -26,6 +26,7 @@ public class GetSurveyScheduleQueryHandler(IApplicationDbContext context, ICurre
 
         return surveySchedules.Select(s => new SurveyScheduleVm
         {
+            Id = s.Id,
             CustomerName = s.Customer!.Name,
             CustomerPhone = s.Customer!.Phone,
             PropertyAddress = addresses[s.Note],
