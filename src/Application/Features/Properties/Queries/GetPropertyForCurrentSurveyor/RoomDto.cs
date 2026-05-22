@@ -12,6 +12,8 @@ public class RoomDto
 
     public required string Notes { get; init; }
 
+    public int PropertyId { get; init; }
+
     private class Mapping : Profile
     {
         public Mapping()

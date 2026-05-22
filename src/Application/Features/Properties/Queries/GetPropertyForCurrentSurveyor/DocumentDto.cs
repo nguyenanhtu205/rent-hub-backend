@@ -8,6 +8,8 @@ public class DocumentDto
 
     public required string Url { get; set; }
 
+    public int PropertyId { get; init; }
+
     private class Mapping : Profile
     {
         public Mapping()

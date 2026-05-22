@@ -1,14 +1,14 @@
 ﻿namespace Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
 
-public record GetPropertyForCurrentSurveyorQuery : IRequest<PropertyForSurveyorVm>;
+public record GetPropertyForCurrentSurveyorQuery : IRequest<List<PropertyForSurveyorVm>>;
 
 public class GetPropertyForCurrentSurveyorQueryHandler(
     IApplicationDbContext context,
     IMapper mapper,
     ICurrentUser currentUser)
-    : IRequestHandler<GetPropertyForCurrentSurveyorQuery, PropertyForSurveyorVm>
+    : IRequestHandler<GetPropertyForCurrentSurveyorQuery, List<PropertyForSurveyorVm>>
 {
-    public async Task<PropertyForSurveyorVm> Handle(GetPropertyForCurrentSurveyorQuery request,
+    public async Task<List<PropertyForSurveyorVm>> Handle(GetPropertyForCurrentSurveyorQuery request,
         CancellationToken cancellationToken)
     {
         string? staffId = currentUser.Id;
@@ -24,29 +24,44 @@ public class GetPropertyForCurrentSurveyorQueryHandler(
             throw new ForbiddenAccessException();
         }
 
-        PropertyDto? propertyDto = await context.Properties
+        List<PropertyDto> properties = await context.Properties
             .AsNoTracking()
             .Where(p => p.StaffId == int.Parse(staffId) && p.Status == PropertyStatus.NotSurveyed)
             .ProjectTo<PropertyDto>(mapper.ConfigurationProvider)
-            .FirstOrDefaultAsync(cancellationToken);
+            .ToListAsync(cancellationToken);
 
-        if (propertyDto == null)
+        if (properties.Count == 0)
         {
-            return new PropertyForSurveyorVm { Property = null!, Rooms = [] };
+            return [];
         }
 
-        List<RoomDto> rooms = await context.Rooms
+        List<int> propertyIds = properties.Select(p => p.Id).ToList();
+        
+        List<RoomDto> allRooms = await context.Rooms
             .AsNoTracking()
-            .Where(r => r.PropertyId == propertyDto.Id)
+            .Where(r => propertyIds.Contains(r.PropertyId))
             .ProjectTo<RoomDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        List<DocumentDto> documents = await context.PropertyDocuments
+        List<DocumentDto> allDocuments = await context.PropertyDocuments
             .AsNoTracking()
-            .Where(d => d.PropertyId == propertyDto.Id)
+            .Where(d => propertyIds.Contains(d.PropertyId))
             .ProjectTo<DocumentDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return new PropertyForSurveyorVm { Property = propertyDto, Rooms = rooms, Documents = documents };
+        Dictionary<int, List<RoomDto>> roomsByProperty = allRooms
+            .GroupBy(r => r.PropertyId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        Dictionary<int, List<DocumentDto>> documentsByProperty = allDocuments
+            .GroupBy(d => d.PropertyId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        return properties.Select(p => new PropertyForSurveyorVm
+        {
+            Property = p,
+            Rooms = roomsByProperty.GetValueOrDefault(p.Id, []),
+            Documents = documentsByProperty.GetValueOrDefault(p.Id, [])
+        }).ToList();
     }
 }

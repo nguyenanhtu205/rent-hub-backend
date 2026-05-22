@@ -18,7 +18,7 @@ public class Properties : IEndpointGroup
             .DisableAntiforgery();
 
         groupBuilder.MapGet(GetPropertyForCurrentSurveyor)
-            .Produces<PropertyForSurveyorVm>()
+            .Produces<List<PropertyForSurveyorVm>>()
             .RequireAuthorization()
             .RequireRateLimiting("get");
     }
@@ -65,7 +65,7 @@ public class Properties : IEndpointGroup
     public static async Task<IResult> GetPropertyForCurrentSurveyor(ISender sender, CancellationToken cancellationToken)
     {
         GetPropertyForCurrentSurveyorQuery query = new();
-        PropertyForSurveyorVm result = await sender.Send(query, cancellationToken);
+        List<PropertyForSurveyorVm> result = await sender.Send(query, cancellationToken);
         return Results.Ok(result);
     }
 }
