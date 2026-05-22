@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Application.Common.Exceptions;
 using Application.Features.Properties.Commands.CreateProperty;
+using Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,11 @@ public class Properties : IEndpointGroup
             .RequireAuthorization("Lessor")
             .RequireRateLimiting("post")
             .DisableAntiforgery();
+
+        groupBuilder.MapGet(GetPropertyForCurrentSurveyor)
+            .Produces<PropertyForSurveyorVm>()
+            .RequireAuthorization()
+            .RequireRateLimiting("get");
     }
 
     [EndpointSummary("Create property")]
@@ -53,5 +59,13 @@ public class Properties : IEndpointGroup
         await sender.Send(command, cancellationToken);
 
         return Results.NoContent();
+    }
+
+    [EndpointSummary("Get properties for current surveyor")]
+    public static async Task<IResult> GetPropertyForCurrentSurveyor(ISender sender, CancellationToken cancellationToken)
+    {
+        GetPropertyForCurrentSurveyorQuery query = new();
+        PropertyForSurveyorVm result = await sender.Send(query, cancellationToken);
+        return Results.Ok(result);
     }
 }
