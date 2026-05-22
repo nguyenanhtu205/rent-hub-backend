@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Application.Common.Exceptions;
 using Application.Features.Properties.Commands.CreateProperty;
+using Application.Features.Properties.Queries.GetPropertyForCurrentLessor;
 using Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,11 @@ public class Properties : IEndpointGroup
             .RequireAuthorization("Lessor")
             .RequireRateLimiting("post")
             .DisableAntiforgery();
+        
+        groupBuilder.MapGet(GetPropertyForCurrentLessor, "for-lessor")
+            .Produces<PropertyVm>()
+            .RequireAuthorization("Lessor")
+            .RequireRateLimiting("get");
 
         groupBuilder.MapGet(GetPropertyForCurrentSurveyor, "for-surveyor")
             .Produces<List<PropertyForSurveyorVm>>()
@@ -66,6 +72,14 @@ public class Properties : IEndpointGroup
     {
         GetPropertyForCurrentSurveyorQuery query = new();
         List<PropertyForSurveyorVm> result = await sender.Send(query, cancellationToken);
+        return Results.Ok(result);
+    }
+
+    [EndpointSummary("Get properties for current lessor")]
+    public static async Task<IResult> GetPropertyForCurrentLessor(ISender sender, CancellationToken cancellationToken)
+    {
+        GetPropertyForCurrentLessorQuery query = new();
+        PropertyVm result = await sender.Send(query, cancellationToken);
         return Results.Ok(result);
     }
 }
