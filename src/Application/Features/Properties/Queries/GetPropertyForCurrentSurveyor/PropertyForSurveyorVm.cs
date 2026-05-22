@@ -7,4 +7,8 @@ public class PropertyForSurveyorVm
     public IReadOnlyCollection<RoomDto> Rooms { get; init; } = [];
 
     public IReadOnlyCollection<DocumentDto> Documents { get; init; } = [];
+
+    public required string CustomerName { get; init; }
+
+    public required string CustomerPhone { get; init; }
 }

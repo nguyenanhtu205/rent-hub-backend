@@ -24,10 +24,10 @@ public class GetPropertyForCurrentSurveyorQueryHandler(
             throw new ForbiddenAccessException();
         }
 
-        List<PropertyDto> properties = await context.Properties
+        List<Property> properties = await context.Properties
             .AsNoTracking()
+            .Include(p => p.Customer)
             .Where(p => p.StaffId == int.Parse(staffId) && p.Status == PropertyStatus.NotSurveyed)
-            .ProjectTo<PropertyDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         if (properties.Count == 0)
@@ -36,7 +36,7 @@ public class GetPropertyForCurrentSurveyorQueryHandler(
         }
 
         List<int> propertyIds = properties.Select(p => p.Id).ToList();
-        
+
         List<RoomDto> allRooms = await context.Rooms
             .AsNoTracking()
             .Where(r => propertyIds.Contains(r.PropertyId))
@@ -57,11 +57,16 @@ public class GetPropertyForCurrentSurveyorQueryHandler(
             .GroupBy(d => d.PropertyId)
             .ToDictionary(g => g.Key, g => g.ToList());
 
+        Dictionary<int, PropertyDto> propertyDtoById = properties
+            .ToDictionary(p => p.Id, mapper.Map<PropertyDto>);
+
         return properties.Select(p => new PropertyForSurveyorVm
         {
-            Property = p,
+            Property = propertyDtoById[p.Id],
             Rooms = roomsByProperty.GetValueOrDefault(p.Id, []),
-            Documents = documentsByProperty.GetValueOrDefault(p.Id, [])
+            Documents = documentsByProperty.GetValueOrDefault(p.Id, []),
+            CustomerName = p.Customer!.Name,
+            CustomerPhone = p.Customer!.Phone
         }).ToList();
     }
 }
