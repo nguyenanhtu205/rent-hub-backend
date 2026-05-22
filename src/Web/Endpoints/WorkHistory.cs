@@ -18,7 +18,7 @@ public class WorkHistory : IEndpointGroup
             .Produces<List<SurveyScheduleVm>>()
             .RequireRateLimiting("get");
 
-        groupBuilder.MapPut(UpdateSurveySchedule, "survey-schedule")
+        groupBuilder.MapPatch(UpdateSurveySchedule, "survey-schedule")
             .RequireAuthorization("Surveyor")
             .Produces(StatusCodes.Status204NoContent)
             .RequireRateLimiting("put");
