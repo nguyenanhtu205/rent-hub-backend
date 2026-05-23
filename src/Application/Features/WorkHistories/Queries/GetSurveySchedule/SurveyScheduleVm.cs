@@ -10,7 +10,7 @@ public class SurveyScheduleVm
 
     public required string PropertyAddress { get; init; }
 
-    public DateTimeOffset Time { get; set; }
+    public DateTimeOffset Time { get; init; }
 
-    public required WorkHistoryStatus Status { get; set; }
+    public required WorkHistoryStatus Status { get; init; }
 }
