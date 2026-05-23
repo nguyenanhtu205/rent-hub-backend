@@ -11,7 +11,8 @@ public class GetContractForLegalStaffQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken)
     {
         List<ConsignmentContract> contracts = await context.ConsignmentContracts
-            .Where(c => c.Status == ConsignmentContractStatus.PendingFinanceReview)
+            .Where(c => c.Status == ConsignmentContractStatus.PendingFinanceReview ||
+                        c.Status == ConsignmentContractStatus.Cancelled)
             .ToListAsync(cancellationToken);
 
         if (contracts.Count == 0)
@@ -30,7 +31,9 @@ public class GetContractForLegalStaffQueryHandler(IApplicationDbContext context)
         {
             ContractId = c.Id,
             CustomerName = customerInfo[c.PropertyId].Name,
-            CustomerPhone = customerInfo[c.PropertyId].Phone
+            CustomerPhone = customerInfo[c.PropertyId].Phone,
+            Status = c.Status,
+            RemainingDeposit = c.RemainingDeposit
         }).ToList();
     }
 }
