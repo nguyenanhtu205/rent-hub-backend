@@ -2,9 +2,10 @@
 
 public enum ConsignmentContractStatus
 {
-    PendingLegalReview, 
-    PendingFinanceReview, 
-    PendingManagerApproval, 
-    Completed, 
+    PendingLessorApproval,
+    PendingLegalReview,
+    PendingFinanceReview,
+    PendingManagerApproval,
+    Completed,
     Cancelled
 }

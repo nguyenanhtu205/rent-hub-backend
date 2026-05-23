@@ -1,4 +1,4 @@
-﻿namespace Application.Features.WorkHistories.Queries.UpdateSurveySchedule;
+﻿namespace Application.Features.WorkHistories.Commands.UpdateSurveySchedule;
 
 public record UpdateSurveyScheduleCommand(int WorkHistoryId, bool IsPassed) : IRequest;
 
@@ -20,6 +20,11 @@ public class UpdateSurveyScheduleCommandHandler(IApplicationDbContext context, I
             throw new ForbiddenAccessException();
         }
 
+        if (workHistory.Time > DateTimeOffset.UtcNow)
+        {
+            throw new ConflictException("Survey schedule is in the future");
+        }
+
         if (workHistory.Status == WorkHistoryStatus.Completed)
         {
             throw new ConflictException("Work history already completed");
@@ -32,6 +37,24 @@ public class UpdateSurveyScheduleCommandHandler(IApplicationDbContext context, I
             .Where(x => x.Id == int.Parse(workHistory.Note))
             .ExecuteUpdateAsync(x => x.SetProperty(p
                 => p.Status, newStatus), cancellationToken);
+
+        await context.Staffs.Where(s => s.Id == int.Parse(currentUser.Id!))
+            .ExecuteUpdateAsync(s => s.SetProperty(staff => staff.ActiveWorkCount, staff
+                => staff.ActiveWorkCount - 1), cancellationToken);
+
+        if (request.IsPassed)
+        {
+            await context.ConsignmentContracts.AddAsync(
+                new ConsignmentContract
+                {
+                    DurationInMonths = DefaultContractTerms.DurationInMonths,
+                    RemainingDeposit = 0,
+                    CommissionRate = DefaultContractTerms.CommissionRate,
+                    Terms = DefaultContractTerms.Serialize(),
+                    Status = ConsignmentContractStatus.PendingLessorApproval,
+                    PropertyId = int.Parse(workHistory.Note)
+                }, cancellationToken);
+        }
 
         await context.SaveChangesAsync(cancellationToken);
     }

@@ -1,4 +1,4 @@
-﻿namespace Application.Features.WorkHistories.Queries.UpdateSurveySchedule;
+﻿namespace Application.Features.WorkHistories.Commands.UpdateSurveySchedule;
 
 public class UpdateSurveyScheduleCommandValidator : AbstractValidator<UpdateSurveyScheduleCommand>
 {

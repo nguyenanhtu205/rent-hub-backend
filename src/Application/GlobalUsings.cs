@@ -9,3 +9,4 @@ global using FluentValidation;
 global using FluentValidation.Results;
 global using AutoMapper;
 global using AutoMapper.QueryableExtensions;
+global using Domain.Contracts;

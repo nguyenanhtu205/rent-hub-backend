@@ -1,7 +1,7 @@
 ﻿using Application.Features.WorkHistories.Commands.CreateSurveySchedule;
+using Application.Features.WorkHistories.Commands.UpdateSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveyScheduleForLessor;
-using Application.Features.WorkHistories.Queries.UpdateSurveySchedule;
 using SurveyScheduleVm = Application.Features.WorkHistories.Queries.GetSurveySchedule.SurveyScheduleVm;
 
 namespace Web.Endpoints;
