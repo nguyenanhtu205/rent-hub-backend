@@ -1,5 +1,6 @@
 ﻿using Application.Features.ConsignmentContracts.Commands.UpdateConsignmentContractForLegalStaff;
 using Application.Features.ConsignmentContracts.Commands.UpdateConsignmentContractForLessor;
+using Application.Features.ConsignmentContracts.Queries.GetConsignmentContractForFinanceStaff;
 using Application.Features.ConsignmentContracts.Queries.GetConsignmentContractForLegalStaff;
 using Application.Features.ConsignmentContracts.Queries.GetConsignmentContractForLessor;
 
@@ -17,6 +18,11 @@ public class ConsignmentContracts : IEndpointGroup
         groupBuilder.MapGet(GetContractsForLegalStaff, "legal-staff")
             .RequireAuthorization("LegalStaff")
             .Produces<List<LegalContractVm>>()
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapGet(GetContractsForFinanceStaff, "finance-staff")
+            .RequireAuthorization("FinanceStaff")
+            .Produces<List<FinanceContractVm>>()
             .RequireRateLimiting("get");
 
         groupBuilder.MapPatch(UpdateContractForLessor, "lessor")
@@ -61,5 +67,12 @@ public class ConsignmentContracts : IEndpointGroup
     {
         await sender.Send(command, cancellationToken);
         return Results.NoContent();
+    }
+
+    [EndpointSummary("Get consignment contracts for finance staff")]
+    public static async Task<IResult> GetContractsForFinanceStaff(ISender sender, CancellationToken cancellationToken)
+    {
+        List<FinanceContractVm> contracts = await sender.Send(new GetContractForFinanceStaffQuery(), cancellationToken);
+        return Results.Ok(contracts);
     }
 }
