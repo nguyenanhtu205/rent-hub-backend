@@ -1,4 +1,5 @@
 ﻿using Application.Features.ConsignmentContracts.Commands.UpdateConsignmentContractForLessor;
+using Application.Features.ConsignmentContracts.Queries.GetConsignmentContractForLegalStaff;
 using Application.Features.ConsignmentContracts.Queries.GetConsignmentContractForLessor;
 
 namespace Web.Endpoints;
@@ -10,6 +11,11 @@ public class ConsignmentContracts : IEndpointGroup
         groupBuilder.MapGet(GetConsignmentContractForLessor, "lessor/{propertyId:int}")
             .RequireAuthorization("Lessor")
             .Produces<ConsignmentContractVm>()
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapGet(GetContractsForLegalStaff, "legal-staff")
+            .RequireAuthorization("LegalStaff")
+            .Produces<List<LegalContractVm>>()
             .RequireRateLimiting("get");
 
         groupBuilder.MapPatch(UpdateContractForLessor, "lessor")
@@ -34,5 +40,12 @@ public class ConsignmentContracts : IEndpointGroup
     {
         await sender.Send(command, cancellationToken);
         return Results.NoContent();
+    }
+
+    [EndpointSummary("Get consignment contracts for legal staff")]
+    public static async Task<IResult> GetContractsForLegalStaff(ISender sender, CancellationToken cancellationToken)
+    {
+        List<LegalContractVm> contracts = await sender.Send(new GetContractForLegalStaffQuery(), cancellationToken);
+        return Results.Ok(contracts);
     }
 }
