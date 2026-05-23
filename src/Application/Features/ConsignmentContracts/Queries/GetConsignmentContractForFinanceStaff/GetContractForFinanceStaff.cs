@@ -13,6 +13,7 @@ public class GetContractForLegalStaffQueryHandler(IApplicationDbContext context)
         List<ConsignmentContract> contracts = await context.ConsignmentContracts
             .Where(c => c.Status == ConsignmentContractStatus.PendingFinanceReview ||
                         c.Status == ConsignmentContractStatus.Cancelled)
+            .Include(c => c.Property)
             .ToListAsync(cancellationToken);
 
         if (contracts.Count == 0)
@@ -33,7 +34,12 @@ public class GetContractForLegalStaffQueryHandler(IApplicationDbContext context)
             CustomerName = customerInfo[c.PropertyId].Name,
             CustomerPhone = customerInfo[c.PropertyId].Phone,
             Status = c.Status,
-            RemainingDeposit = c.RemainingDeposit
+            RemainingDeposit = c.RemainingDeposit,
+            Type = c.Property!.Type,
+            Address = c.Property.Address,
+            Area = c.Property.Area,
+            Direction = c.Property.Direction,
+            NumOfRoom = c.Property.NumOfRoom
         }).ToList();
     }
 }
