@@ -130,6 +130,13 @@ public static class DefaultContractTerms
         return JsonSerializer.Serialize(Clauses, JsonOptions);
     }
 
+    public static string Serialize(IEnumerable<ContractClause> contractClauses)
+    {
+        return JsonSerializer.Serialize(
+            contractClauses,
+            JsonOptions);
+    }
+
     public static IReadOnlyList<ContractClause> Deserialize(string json)
     {
         return JsonSerializer.Deserialize<List<ContractClause>>(json, JsonOptions)
