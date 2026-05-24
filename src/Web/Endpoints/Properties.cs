@@ -2,6 +2,7 @@
 using Application.Common.Exceptions;
 using Application.Features.Properties.Commands.CreateProperty;
 using Application.Features.Properties.Queries.GetAllProperties;
+using Application.Features.Properties.Queries.GetDetailInformation;
 using Application.Features.Properties.Queries.GetPropertyForCurrentLessor;
 using Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
 using FluentValidation.Results;
@@ -17,12 +18,17 @@ public class Properties : IEndpointGroup
             .Produces<List<AllPropertyVm>>()
             .RequireRateLimiting("get");
 
+        groupBuilder.MapGet(GetDetailInformation, "{propertyId:int}")
+            .Produces<PropertyInformationVm>()
+            .RequireAuthorization("Renter")
+            .RequireRateLimiting("get");
+
         groupBuilder.MapPost(CreateProperty)
             .Produces(StatusCodes.Status204NoContent)
             .RequireAuthorization("Lessor")
             .RequireRateLimiting("post")
             .DisableAntiforgery();
-        
+
         groupBuilder.MapGet(GetPropertyForCurrentLessor, "for-lessor")
             .Produces<PropertyVm>()
             .RequireAuthorization("Lessor")
@@ -38,6 +44,14 @@ public class Properties : IEndpointGroup
     public static async Task<IResult> GetAllProperties(ISender sender, CancellationToken cancellationToken)
     {
         List<AllPropertyVm> result = await sender.Send(new GetAllPropertiesQuery(), cancellationToken);
+        return Results.Ok(result);
+    }
+
+    [EndpointSummary("Get property detail information")]
+    public static async Task<IResult> GetDetailInformation(int propertyId, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        PropertyInformationVm result = await sender.Send(new GetDetailInformationQuery(propertyId), cancellationToken);
         return Results.Ok(result);
     }
 
