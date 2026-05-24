@@ -13,9 +13,12 @@ public class UpdateContractForFinanceStaffCommandHandler(IApplicationDbContext c
     {
         if (request.Type == FinancialTransactionType.DepositReceived)
         {
-            await context.ConsignmentContracts.Where(c => c.Id == request.ContractId)
-                .ExecuteUpdateAsync(c => c.SetProperty(x
-                    => x.Status, ConsignmentContractStatus.PendingManagerApproval), cancellationToken);
+            await context.ConsignmentContracts
+                .Where(c => c.Id == request.ContractId)
+                .ExecuteUpdateAsync(c => c
+                        .SetProperty(x => x.Status, ConsignmentContractStatus.PendingManagerApproval)
+                        .SetProperty(x => x.RemainingDeposit, 1000000),
+                    cancellationToken);
 
             context.FinancialTransactions.Add(new FinancialTransaction
             {
@@ -30,6 +33,11 @@ public class UpdateContractForFinanceStaffCommandHandler(IApplicationDbContext c
         }
         else
         {
+            await context.ConsignmentContracts
+                .Where(c => c.Id == request.ContractId)
+                .ExecuteUpdateAsync(c => c
+                    .SetProperty(x => x.RemainingDeposit, 0), cancellationToken);
+
             context.FinancialTransactions.Add(new FinancialTransaction
             {
                 Type = FinancialTransactionType.DepositRefunded,
