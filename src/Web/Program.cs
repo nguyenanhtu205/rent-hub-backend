@@ -22,16 +22,12 @@ using (IServiceScope scope = app.Services.CreateScope())
     db.Database.Migrate();
 }
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseHttpsRedirection();
-}
-
 app.UseCors(static builder =>
     builder
-        .WithOrigins(
-            "http://localhost:5173",
-            "https://rent-hub-hanoi.vercel.app"
+        .SetIsOriginAllowed(origin =>
+            origin == "http://localhost:5173" ||
+            origin == "https://rent-hub-hanoi.vercel.app" ||
+            origin.Contains("rent-hub-hanoi") && origin.EndsWith(".vercel.app")
         )
         .AllowAnyMethod()
         .AllowAnyHeader()
