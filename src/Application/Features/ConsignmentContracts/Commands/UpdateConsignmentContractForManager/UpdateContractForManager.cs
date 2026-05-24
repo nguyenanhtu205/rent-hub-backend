@@ -15,10 +15,32 @@ public class UpdateContractForManagerCommandHandler(IApplicationDbContext contex
             throw new NotFoundException("Contract not found");
         }
 
-        await context.Properties
-            .Where(x => x.Id == contract.PropertyId)
-            .ExecuteUpdateAsync(x => x.SetProperty(p
-                => p.Status, PropertyStatus.Active), cancellationToken);
+        Property? property = await context.Properties
+            .FirstOrDefaultAsync(x => x.Id == contract.PropertyId, cancellationToken);
+
+        if (property == null)
+        {
+            throw new NotFoundException("Property not found");
+        }
+
+        property.Status = PropertyStatus.Active;
+
+        int staffId = await context.StaffWorkingAreas
+            .Where(x =>
+                x.District == property.District &&
+                x.Role == StaffRole.Broker)
+            .Select(x => x.StaffId)
+            .Distinct()
+            .Join(
+                context.Staffs,
+                id => id,
+                staff => staff.Id,
+                (id, staff) => staff)
+            .OrderBy(s => s.ActiveWorkCount)
+            .Select(s => s.Id)
+            .FirstAsync(cancellationToken);
+
+        property.StaffId = staffId;
 
         contract.Status = ConsignmentContractStatus.Completed;
         contract.SigningDate = DateTimeOffset.UtcNow;
