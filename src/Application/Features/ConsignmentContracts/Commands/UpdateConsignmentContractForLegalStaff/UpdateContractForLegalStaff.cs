@@ -2,7 +2,7 @@
 
 public record UpdateContractForLegalStaffCommand(int ContractId, List<ContractClause> AdditionalClauses) : IRequest;
 
-public class UpdateContractForLegalStaffCommandHandler(IApplicationDbContext context)
+public class UpdateContractForLegalStaffCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
     : IRequestHandler<UpdateContractForLegalStaffCommand>
 {
     public async Task Handle(
@@ -24,6 +24,22 @@ public class UpdateContractForLegalStaffCommandHandler(IApplicationDbContext con
         contract.Terms = DefaultContractTerms.Serialize(clauses);
 
         contract.Status = ConsignmentContractStatus.PendingLessorApproval;
+
+        Property? property = await context.Properties
+            .Where(p => p.Id == contract.PropertyId)
+            .Include(p => p.CustomerId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+
+        context.WorkHistories.Add(new WorkHistory
+        {
+            Type = WorkHistoryType.LegalTask,
+            Time = DateTimeOffset.UtcNow,
+            Note = DefaultContractTerms.Serialize(request.AdditionalClauses),
+            Status = WorkHistoryStatus.Completed,
+            StaffId = int.Parse(currentUser.Id!),
+            CustomerId = property!.CustomerId
+        });
 
         await context.SaveChangesAsync(cancellationToken);
     }
