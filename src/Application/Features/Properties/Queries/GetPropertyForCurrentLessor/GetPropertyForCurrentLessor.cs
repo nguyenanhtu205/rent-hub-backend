@@ -13,6 +13,7 @@ public class GetPropertyForCurrentLessorQueryHandler(
         int lessorId = int.Parse(currentUser.Id!);
 
         List<PropertyDto> properties = await context.Properties
+            .AsNoTracking()
             .Where(p => p.CustomerId == lessorId)
             .ProjectTo<PropertyDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);

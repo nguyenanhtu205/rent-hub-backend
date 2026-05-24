@@ -20,6 +20,7 @@ public class GetFinancialTransactionsQueryHandler(
 
         {
             return await context.FinancialTransactions
+                .AsNoTracking()
                 .ProjectTo<FinancialTransactionDto>(mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
         }

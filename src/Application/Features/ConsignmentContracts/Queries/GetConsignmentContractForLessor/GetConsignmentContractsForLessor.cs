@@ -12,6 +12,7 @@ public class GetConsignmentContractsForLessorQueryHandler(
         CancellationToken cancellationToken)
     {
         int lessorId = await context.Properties
+            .AsNoTracking()
             .Where(x => x.Id == request.PropertyId)
             .Select(x => x.CustomerId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -22,6 +23,7 @@ public class GetConsignmentContractsForLessorQueryHandler(
         }
 
         ConsignmentContractDto? contract = await context.ConsignmentContracts
+            .AsNoTracking()
             .Where(x => x.PropertyId == request.PropertyId)
             .ProjectTo<ConsignmentContractDto>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);

@@ -16,6 +16,7 @@ public class GetDetailTransactionQueryHandler(IApplicationDbContext context, ICu
         }
 
         FinancialTransaction? transaction = await context.FinancialTransactions
+            .AsNoTracking()
             .Where(t => t.Id == request.TransactionId)
             .Include(t => t.Staff)
             .FirstOrDefaultAsync(cancellationToken);
@@ -33,6 +34,7 @@ public class GetDetailTransactionQueryHandler(IApplicationDbContext context, ICu
         if (transaction.RefType == RefType.RentalTransaction)
         {
             RentalTransaction? rentalTransaction = await context.RentalTransactions
+                .AsNoTracking()
                 .Where(rt => rt.Id == transaction.RefId)
                 .Include(rt => rt.Customer)
                 .FirstOrDefaultAsync(cancellationToken);
@@ -52,10 +54,12 @@ public class GetDetailTransactionQueryHandler(IApplicationDbContext context, ICu
         else
         {
             ConsignmentContract? contract = await context.ConsignmentContracts
+                .AsNoTracking()
                 .Where(c => c.Id == transaction.RefId)
                 .FirstOrDefaultAsync(cancellationToken);
 
             Property? property = await context.Properties
+                .AsNoTracking()
                 .Where(p => p.Id == contract!.PropertyId)
                 .Include(p => p.Customer)
                 .FirstOrDefaultAsync(cancellationToken);

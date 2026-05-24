@@ -9,6 +9,7 @@ public class GetSurveyScheduleForLessorQueryHandler(IApplicationDbContext contex
         CancellationToken cancellationToken)
     {
         List<WorkHistory> surveySchedules = await context.WorkHistories
+            .AsNoTracking()
             .Where(w => w.CustomerId == int.Parse(currentUser.Id!))
             .Include(w => w.Staff)
             .ToListAsync(cancellationToken);
@@ -21,10 +22,12 @@ public class GetSurveyScheduleForLessorQueryHandler(IApplicationDbContext contex
         List<int> propertyIds = surveySchedules.Select(s => int.Parse(s.Note)).ToList();
         
         Dictionary<string, string> addresses = await context.Properties
+            .AsNoTracking()
             .Where(p => propertyIds.Contains(p.Id))
             .ToDictionaryAsync(p => p.Id.ToString(), p => p.Address, cancellationToken);
         
         Dictionary<string, PropertyType> types = await context.Properties
+            .AsNoTracking()
             .Where(p => propertyIds.Contains(p.Id))
             .ToDictionaryAsync(p => p.Id.ToString(), p => p.Type, cancellationToken);
         

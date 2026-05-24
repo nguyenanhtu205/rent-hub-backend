@@ -11,6 +11,7 @@ public class GetContractForManagerQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken)
     {
         List<ConsignmentContract> contracts = await context.ConsignmentContracts
+            .AsNoTracking()
             .Where(c => c.Status == ConsignmentContractStatus.PendingManagerApproval)
             .Include(c => c.Property)
             .ToListAsync(cancellationToken);
@@ -23,6 +24,7 @@ public class GetContractForManagerQueryHandler(IApplicationDbContext context)
         List<int> propertyIds = contracts.Select(c => c.PropertyId).ToList();
 
         Dictionary<int, CustomerInfo> customerInfo = await context.Properties
+            .AsNoTracking()
             .Where(p => propertyIds.Contains(p.Id))
             .Select(p => new { p.Id, p.Customer!.Name, p.Customer.Phone })
             .ToDictionaryAsync(p => p.Id, p => new CustomerInfo(p.Name, p.Phone), cancellationToken);
