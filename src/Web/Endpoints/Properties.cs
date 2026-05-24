@@ -14,7 +14,7 @@ public class Properties : IEndpointGroup
     public static void Map(RouteGroupBuilder groupBuilder)
     {
         groupBuilder.MapGet(GetAllProperties)
-            .Produces<List<AllPropertyDto>>()
+            .Produces<List<AllPropertyVm>>()
             .RequireRateLimiting("get");
 
         groupBuilder.MapPost(CreateProperty)
@@ -37,7 +37,7 @@ public class Properties : IEndpointGroup
     [EndpointSummary("Get all properties")]
     public static async Task<IResult> GetAllProperties(ISender sender, CancellationToken cancellationToken)
     {
-        List<AllPropertyDto> result = await sender.Send(new GetAllPropertiesQuery(), cancellationToken);
+        List<AllPropertyVm> result = await sender.Send(new GetAllPropertiesQuery(), cancellationToken);
         return Results.Ok(result);
     }
 

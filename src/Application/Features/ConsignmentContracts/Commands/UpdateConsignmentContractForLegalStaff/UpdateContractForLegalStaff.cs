@@ -26,10 +26,9 @@ public class UpdateContractForLegalStaffCommandHandler(IApplicationDbContext con
         contract.Status = ConsignmentContractStatus.PendingLessorApproval;
 
         Property? property = await context.Properties
+            .AsNoTracking()
             .Where(p => p.Id == contract.PropertyId)
-            .Include(p => p.CustomerId)
             .FirstOrDefaultAsync(cancellationToken);
-
 
         context.WorkHistories.Add(new WorkHistory
         {
