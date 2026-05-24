@@ -27,7 +27,7 @@ app.UseCors(static builder =>
         .SetIsOriginAllowed(origin =>
             origin == "http://localhost:5173" ||
             origin == "https://rent-hub-hanoi.vercel.app" ||
-            origin.Contains("rent-hub-hanoi") && origin.EndsWith(".vercel.app")
+            origin.EndsWith(".vercel.app")
         )
         .AllowAnyMethod()
         .AllowAnyHeader()
