@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Application.Common.Exceptions;
 using Application.Features.Properties.Commands.CreateProperty;
+using Application.Features.Properties.Queries.GetAllProperties;
 using Application.Features.Properties.Queries.GetPropertyForCurrentLessor;
 using Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
 using FluentValidation.Results;
@@ -12,6 +13,10 @@ public class Properties : IEndpointGroup
 {
     public static void Map(RouteGroupBuilder groupBuilder)
     {
+        groupBuilder.MapGet(GetAllProperties)
+            .Produces<List<AllPropertyDto>>()
+            .RequireRateLimiting("get");
+
         groupBuilder.MapPost(CreateProperty)
             .Produces(StatusCodes.Status204NoContent)
             .RequireAuthorization("Lessor")
@@ -27,6 +32,13 @@ public class Properties : IEndpointGroup
             .Produces<List<PropertyForSurveyorVm>>()
             .RequireAuthorization("Surveyor")
             .RequireRateLimiting("get");
+    }
+
+    [EndpointSummary("Get all properties")]
+    public static async Task<IResult> GetAllProperties(ISender sender, CancellationToken cancellationToken)
+    {
+        List<AllPropertyDto> result = await sender.Send(new GetAllPropertiesQuery(), cancellationToken);
+        return Results.Ok(result);
     }
 
     [EndpointSummary("Create property")]
