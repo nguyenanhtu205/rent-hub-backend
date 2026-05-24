@@ -471,3 +471,4 @@ $RECYCLE.BIN/
 
 # Ignore development settings
 appsettings.Development.json
+appssetings.Production.json

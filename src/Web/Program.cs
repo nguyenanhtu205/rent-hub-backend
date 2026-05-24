@@ -7,6 +7,9 @@ using Web;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+string port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://*:{port}");
+
 builder.AddApplicationServices();
 builder.AddInfrastructureServices();
 builder.AddWebServices();
@@ -26,7 +29,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors(static builder =>
     builder
-        .WithOrigins("http://localhost:5173")
+        .WithOrigins(
+            "http://localhost:5173",
+            "https://rent-hub-hanoi.vercel.app"
+        )
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials()
