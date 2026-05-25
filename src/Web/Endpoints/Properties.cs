@@ -5,6 +5,7 @@ using Application.Features.Properties.Queries.GetAllProperties;
 using Application.Features.Properties.Queries.GetDetailInformation;
 using Application.Features.Properties.Queries.GetPropertyForCurrentLessor;
 using Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
+using Application.Features.Properties.Queries.GetPropertyInformationForBroker;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 
@@ -37,6 +38,11 @@ public class Properties : IEndpointGroup
         groupBuilder.MapGet(GetPropertyForCurrentSurveyor, "for-surveyor")
             .Produces<List<PropertyForSurveyorVm>>()
             .RequireAuthorization("Surveyor")
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapGet(GetPropertyInformationForBroker, "for-broker/{workHistoryId:int}")
+            .Produces<PropertyInformationForBrokerVm>()
+            .RequireAuthorization("Broker")
             .RequireRateLimiting("get");
     }
 
@@ -106,6 +112,15 @@ public class Properties : IEndpointGroup
     {
         GetPropertyForCurrentLessorQuery query = new();
         PropertyVm result = await sender.Send(query, cancellationToken);
+        return Results.Ok(result);
+    }
+
+    [EndpointSummary("Get property information for broker")]
+    public static async Task<IResult> GetPropertyInformationForBroker(int workHistoryId, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        PropertyInformationForBrokerVm result =
+            await sender.Send(new GetPropertyInformationForBrokerQuery(workHistoryId), cancellationToken);
         return Results.Ok(result);
     }
 }
