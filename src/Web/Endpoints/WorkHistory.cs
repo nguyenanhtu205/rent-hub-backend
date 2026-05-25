@@ -1,8 +1,11 @@
 ﻿using Application.Features.WorkHistories.Commands.CreateSurveySchedule;
 using Application.Features.WorkHistories.Commands.CreateViewingSchedule;
 using Application.Features.WorkHistories.Commands.UpdateSurveySchedule;
+using Application.Features.WorkHistories.Commands.UpdateViewingSchedule;
 using Application.Features.WorkHistories.Queries.GetSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveyScheduleForLessor;
+using Application.Features.WorkHistories.Queries.GetViewingScheduleForBroker;
+using Application.Features.WorkHistories.Queries.GetViewingScheduleForRenter;
 using SurveyScheduleVm = Application.Features.WorkHistories.Queries.GetSurveySchedule.SurveyScheduleVm;
 
 namespace Web.Endpoints;
@@ -36,6 +39,21 @@ public class WorkHistory : IEndpointGroup
             .Produces(StatusCodes.Status204NoContent)
             .Produces(StatusCodes.Status409Conflict)
             .RequireRateLimiting("post");
+
+        groupBuilder.MapGet(GetViewingScheduleForRenter, "viewing-schedule/renter")
+            .RequireAuthorization("Renter")
+            .Produces<List<RenterViewingScheduleVm>>()
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapGet(GetViewingScheduleForBroker, "viewing-schedule/broker")
+            .RequireAuthorization("Broker")
+            .Produces<List<BrokerViewingScheduleVm>>()
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapPatch(UpdateViewingSchedule, "viewing-schedule")
+            .RequireAuthorization("Broker")
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireRateLimiting("put");
     }
 
     [EndpointSummary("Create survey schedule")]
@@ -77,6 +95,30 @@ public class WorkHistory : IEndpointGroup
     [EndpointSummary("Create viewing schedule")]
     [EndpointDescription("Create a new viewing schedule for a property, using by renter.")]
     public static async Task<IResult> CreateViewingSchedule(CreateViewingScheduleCommand command, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
+    }
+
+    [EndpointSummary("Get viewing schedule for renter")]
+    public static async Task<IResult> GetViewingScheduleForRenter(ISender sender, CancellationToken cancellationToken)
+    {
+        List<RenterViewingScheduleVm> viewingSchedules =
+            await sender.Send(new GetViewingScheduleForRenterQuery(), cancellationToken);
+        return Results.Ok(viewingSchedules);
+    }
+
+    [EndpointSummary("Get viewing schedule for broker")]
+    public static async Task<IResult> GetViewingScheduleForBroker(ISender sender, CancellationToken cancellationToken)
+    {
+        List<BrokerViewingScheduleVm> viewingSchedules =
+            await sender.Send(new GetViewingScheduleForBrokerQuery(), cancellationToken);
+        return Results.Ok(viewingSchedules);
+    }
+
+    [EndpointSummary("Update viewing schedule")]
+    public static async Task<IResult> UpdateViewingSchedule(UpdateViewingScheduleCommand command, ISender sender,
         CancellationToken cancellationToken)
     {
         await sender.Send(command, cancellationToken);

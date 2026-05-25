@@ -28,7 +28,7 @@ public class CreateViewingScheduleCommandHandler(IApplicationDbContext context, 
         {
             Type = WorkHistoryType.BrokerTask,
             Time = request.Time,
-            Note = request.PropertyId.ToString(),
+            Note = $"{request.PropertyId}:0",
             Status = WorkHistoryStatus.Pending,
             StaffId = property.StaffId,
             CustomerId = int.Parse(currentUser.Id!)

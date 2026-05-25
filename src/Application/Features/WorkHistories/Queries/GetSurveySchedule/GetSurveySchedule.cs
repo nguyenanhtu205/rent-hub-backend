@@ -10,7 +10,7 @@ public class GetSurveyScheduleQueryHandler(IApplicationDbContext context, ICurre
     {
         List<WorkHistory> surveySchedules = await context.WorkHistories
             .AsNoTracking()
-            .Where(w => w.StaffId == int.Parse(currentUser.Id!))
+            .Where(w => w.StaffId == int.Parse(currentUser.Id!) && w.Type == WorkHistoryType.SurveyorTask)
             .Include(w => w.Customer)
             .ToListAsync(cancellationToken);
 
