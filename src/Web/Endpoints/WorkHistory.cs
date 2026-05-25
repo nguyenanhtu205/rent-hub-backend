@@ -1,4 +1,5 @@
 ﻿using Application.Features.WorkHistories.Commands.CreateSurveySchedule;
+using Application.Features.WorkHistories.Commands.CreateViewingSchedule;
 using Application.Features.WorkHistories.Commands.UpdateSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveyScheduleForLessor;
@@ -29,13 +30,17 @@ public class WorkHistory : IEndpointGroup
             .RequireAuthorization("Surveyor")
             .Produces(StatusCodes.Status204NoContent)
             .RequireRateLimiting("put");
+
+        groupBuilder.MapPost(CreateViewingSchedule, "viewing-schedule")
+            .RequireAuthorization("Renter")
+            .Produces(StatusCodes.Status204NoContent)
+            .Produces(StatusCodes.Status409Conflict)
+            .RequireRateLimiting("post");
     }
 
     [EndpointSummary("Create survey schedule")]
     [EndpointDescription("Create a new survey schedule for a property.")]
-    public static async Task<IResult> CreateSurveySchedule(
-        CreateSurveyScheduleCommand command,
-        ISender sender,
+    public static async Task<IResult> CreateSurveySchedule(CreateSurveyScheduleCommand command, ISender sender,
         CancellationToken cancellationToken)
     {
         await sender.Send(command, cancellationToken);
@@ -44,9 +49,7 @@ public class WorkHistory : IEndpointGroup
 
     [EndpointSummary("Get survey schedule for lessor")]
     [EndpointDescription("Get the survey schedule for the current lessor.")]
-    public static async Task<IResult> GetSurveyScheduleForLessor(
-        ISender sender,
-        CancellationToken cancellationToken)
+    public static async Task<IResult> GetSurveyScheduleForLessor(ISender sender, CancellationToken cancellationToken)
     {
         List<LessorSurveyScheduleVm> surveySchedules =
             await sender.Send(new GetSurveyScheduleForLessorQuery(), cancellationToken);
@@ -55,9 +58,7 @@ public class WorkHistory : IEndpointGroup
 
     [EndpointSummary("Get survey schedule")]
     [EndpointDescription("Get the survey schedule for the current surveyor.")]
-    public static async Task<IResult> GetSurveySchedule(
-        ISender sender,
-        CancellationToken cancellationToken)
+    public static async Task<IResult> GetSurveySchedule(ISender sender, CancellationToken cancellationToken)
     {
         List<SurveyScheduleVm> surveySchedules = await sender.Send(new GetSurveyScheduleQuery(), cancellationToken);
         return Results.Ok(surveySchedules);
@@ -66,9 +67,16 @@ public class WorkHistory : IEndpointGroup
     [EndpointSummary("Update survey schedule")]
     [EndpointDescription(
         "Update the survey schedule for a property. This will mark the work history as completed and update the property status based on whether the survey passed or not.")]
-    public static async Task<IResult> UpdateSurveySchedule(
-        UpdateSurveyScheduleCommand command,
-        ISender sender,
+    public static async Task<IResult> UpdateSurveySchedule(UpdateSurveyScheduleCommand command, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
+    }
+
+    [EndpointSummary("Create viewing schedule")]
+    [EndpointDescription("Create a new viewing schedule for a property, using by renter.")]
+    public static async Task<IResult> CreateViewingSchedule(CreateViewingScheduleCommand command, ISender sender,
         CancellationToken cancellationToken)
     {
         await sender.Send(command, cancellationToken);
