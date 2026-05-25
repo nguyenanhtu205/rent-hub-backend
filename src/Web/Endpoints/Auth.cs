@@ -2,6 +2,7 @@
 using Application.Features.Auth.Commands.Logout;
 using Application.Features.Auth.Commands.RefreshAccessToken;
 using Application.Features.Auth.Commands.Register;
+using Application.Features.Auth.Commands.RegisterForStaff;
 
 namespace Web.Endpoints;
 
@@ -11,6 +12,10 @@ public class Auth : IEndpointGroup
 {
     public static void Map(RouteGroupBuilder groupBuilder)
     {
+        groupBuilder.MapPost(RegisterForStaff, "register-for-staff")
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireRateLimiting("post");
+
         groupBuilder.MapPost(Register, "register")
             .Produces<AccessTokenResponse>()
             .Produces(StatusCodes.Status409Conflict)
@@ -38,6 +43,14 @@ public class Auth : IEndpointGroup
             SameSite = SameSiteMode.Strict,
             Expires = DateTimeOffset.UtcNow.AddDays(7)
         };
+    }
+
+    [EndpointSummary("Register for staff")]
+    public static async Task<IResult> RegisterForStaff(RegisterForStaffCommand command, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
     }
 
     [EndpointSummary("Register")]

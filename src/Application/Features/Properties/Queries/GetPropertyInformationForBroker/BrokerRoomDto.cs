@@ -1,6 +1,6 @@
 ﻿namespace Application.Features.Properties.Queries.GetPropertyInformationForBroker;
 
-public class RoomDto
+public class BrokerRoomDto
 {
     public int Id { get; init; }
 
@@ -12,7 +12,7 @@ public class RoomDto
     {
         public Mapping()
         {
-            CreateMap<Room, RoomDto>();
+            CreateMap<Room, BrokerRoomDto>();
         }
     }
 }

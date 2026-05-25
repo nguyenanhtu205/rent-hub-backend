@@ -2,5 +2,5 @@
 
 public class PropertyInformationForBrokerVm
 {
-    public required List<RoomDto> Rooms { get; set; }
+    public required List<BrokerRoomDto> Rooms { get; set; }
 }

@@ -25,10 +25,10 @@ public class GetPropertyInformationForBrokerQueryHandler(
 
         int propertyId = int.Parse(workHistory.Note.Split(':')[0]);
 
-        List<RoomDto> rooms = await context.Rooms
+        List<BrokerRoomDto> rooms = await context.Rooms
             .AsNoTracking()
             .Where(r => r.PropertyId == propertyId)
-            .ProjectTo<RoomDto>(mapper.ConfigurationProvider)
+            .ProjectTo<BrokerRoomDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return new PropertyInformationForBrokerVm { Rooms = rooms };
