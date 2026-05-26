@@ -6,7 +6,7 @@ public static class DefaultContractTerms
 {
     public const int DurationInMonths = 6;
 
-    public const double CommissionRate = 0.05;
+    public const double CommissionRate = 0.2;
 
     private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
 

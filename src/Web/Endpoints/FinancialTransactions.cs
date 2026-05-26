@@ -1,4 +1,5 @@
-﻿using Application.Features.FinancialTransactions.Queries.GetDetailTransaction;
+﻿using Application.Features.FinancialTransactions.Commands.CreateDepositOffsetTransaction;
+using Application.Features.FinancialTransactions.Queries.GetDetailTransaction;
 using Application.Features.FinancialTransactions.Queries.GetFinancialTransaction;
 
 namespace Web.Endpoints;
@@ -16,6 +17,11 @@ public class FinancialTransactions : IEndpointGroup
             .RequireAuthorization()
             .Produces<DetailTransactionVm>()
             .RequireRateLimiting("get");
+
+        groupBuilder.MapPost(CreateDepositOffsetTransaction, "/deposit-offset")
+            .RequireAuthorization("FinanceStaff")
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireRateLimiting("post");
     }
 
     [EndpointSummary("Get financial transactions")]
@@ -32,5 +38,13 @@ public class FinancialTransactions : IEndpointGroup
     {
         DetailTransactionVm result = await sender.Send(new GetDetailTransactionQuery(transactionId), cancellationToken);
         return Results.Ok(result);
+    }
+
+    [EndpointSummary("Create deposit offset transaction")]
+    public static async Task<IResult> CreateDepositOffsetTransaction(CreateDepositOffsetTransactionCommand command,
+        ISender sender, CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
     }
 }
