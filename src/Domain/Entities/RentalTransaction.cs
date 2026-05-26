@@ -16,6 +16,8 @@ public class RentalTransaction : BaseEntity
     
     public int PropertyId { get; set; }
     
+    public double CommissionAmount { get; set; }
+    
     public Staff? Staff { get; set; }
     
     public Customer? Customer { get; set; }
