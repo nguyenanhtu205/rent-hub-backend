@@ -14,6 +14,8 @@ public class RentalTransaction : BaseEntity
     
     public int CustomerId { get; set; }
     
+    public int PropertyId { get; set; }
+    
     public Staff? Staff { get; set; }
     
     public Customer? Customer { get; set; }

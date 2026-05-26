@@ -39,6 +39,10 @@ public class RentalTransactionConfiguration : IEntityTypeConfiguration<RentalTra
             .HasColumnName("customer_id")
             .IsRequired();
         
+        builder.Property(x => x.PropertyId)
+            .HasColumnName("property_id")
+            .IsRequired();
+        
         builder.HasOne(x => x.Staff)
             .WithMany(s => s.RentalTransactions)
             .HasForeignKey(x => x.StaffId)
