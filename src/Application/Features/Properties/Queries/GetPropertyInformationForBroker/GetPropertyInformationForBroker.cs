@@ -31,6 +31,6 @@ public class GetPropertyInformationForBrokerQueryHandler(
             .ProjectTo<BrokerRoomDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
-        return new PropertyInformationForBrokerVm { Rooms = rooms };
+        return new PropertyInformationForBrokerVm { Rooms = rooms, PropertyId = propertyId };
     }
 }

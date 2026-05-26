@@ -3,4 +3,6 @@
 public class PropertyInformationForBrokerVm
 {
     public required List<BrokerRoomDto> Rooms { get; set; }
+    
+    public int PropertyId { get; set; }
 }
