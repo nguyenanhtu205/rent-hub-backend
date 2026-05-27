@@ -1,8 +1,11 @@
 ﻿using System.Text.Json;
 using Application.Common.Exceptions;
 using Application.Features.Properties.Commands.CreateProperty;
-using Application.Features.Properties.Queries.GetAllProperties;
+using Application.Features.Properties.Commands.UpdatePropertyForLessor;
 using Application.Features.Properties.Queries.GetDetailInformation;
+using Application.Features.Properties.Queries.GetDetailInformationForLessor;
+using Application.Features.Properties.Queries.GetFeaturedProperties;
+using Application.Features.Properties.Queries.GetPropertyByFilter;
 using Application.Features.Properties.Queries.GetPropertyForCurrentLessor;
 using Application.Features.Properties.Queries.GetPropertyForCurrentSurveyor;
 using Application.Features.Properties.Queries.GetPropertyInformationForBroker;
@@ -15,14 +18,28 @@ public class Properties : IEndpointGroup
 {
     public static void Map(RouteGroupBuilder groupBuilder)
     {
-        groupBuilder.MapGet(GetAllProperties)
-            .Produces<List<AllPropertyVm>>()
+        groupBuilder.MapGet(GetFeaturedProperties, "featured")
+            .Produces<List<FeaturedPropertyVm>>()
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapGet(GetPropertyByFilter, "filter")
+            .Produces<List<FilterPropertyVm>>()
             .RequireRateLimiting("get");
 
         groupBuilder.MapGet(GetDetailInformation, "{propertyId:int}")
             .Produces<PropertyInformationVm>()
             .RequireAuthorization("Renter")
             .RequireRateLimiting("get");
+
+        groupBuilder.MapGet(GetDetailInformationForLessor, "lessor/{propertyId:int}")
+            .Produces<LessorDetailInformationVm>()
+            .RequireAuthorization("Lessor")
+            .RequireRateLimiting("get");
+
+        groupBuilder.MapPatch(UpdatePropertyForLessor, "lessor")
+            .Produces(StatusCodes.Status204NoContent)
+            .RequireAuthorization("Lessor")
+            .RequireRateLimiting("put");
 
         groupBuilder.MapPost(CreateProperty)
             .Produces(StatusCodes.Status204NoContent)
@@ -46,10 +63,19 @@ public class Properties : IEndpointGroup
             .RequireRateLimiting("get");
     }
 
-    [EndpointSummary("Get all properties")]
-    public static async Task<IResult> GetAllProperties(ISender sender, CancellationToken cancellationToken)
+    [EndpointSummary("Get featured properties")]
+    public static async Task<IResult> GetFeaturedProperties(ISender sender, CancellationToken cancellationToken)
     {
-        List<AllPropertyVm> result = await sender.Send(new GetAllPropertiesQuery(), cancellationToken);
+        List<FeaturedPropertyVm> result = await sender.Send(new GetFeaturedPropertiesQuery(), cancellationToken);
+        return Results.Ok(result);
+    }
+
+    [EndpointSummary("Get properties by filter")]
+    public static async Task<IResult> GetPropertyByFilter([FromQuery] string? q, [FromQuery] District? district,
+        [FromQuery] PropertyType? type, ISender sender, CancellationToken cancellationToken)
+    {
+        GetPropertyByFilterQuery query = new(q, district, type);
+        List<FilterPropertyVm> result = await sender.Send(query, cancellationToken);
         return Results.Ok(result);
     }
 
@@ -59,6 +85,23 @@ public class Properties : IEndpointGroup
     {
         PropertyInformationVm result = await sender.Send(new GetDetailInformationQuery(propertyId), cancellationToken);
         return Results.Ok(result);
+    }
+
+    [EndpointSummary("Get property detail information for lessor")]
+    public static async Task<IResult> GetDetailInformationForLessor(int propertyId, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        LessorDetailInformationVm result =
+            await sender.Send(new GetDetailInformationForLessorQuery(propertyId), cancellationToken);
+        return Results.Ok(result);
+    }
+
+    [EndpointSummary("Update property information for lessor")]
+    public static async Task<IResult> UpdatePropertyForLessor(UpdatePropertyForLessorCommand command, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
     }
 
     [EndpointSummary("Create property")]

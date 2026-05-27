@@ -2,6 +2,7 @@
 using Application.Features.WorkHistories.Commands.CreateViewingSchedule;
 using Application.Features.WorkHistories.Commands.UpdateSurveySchedule;
 using Application.Features.WorkHistories.Commands.UpdateViewingSchedule;
+using Application.Features.WorkHistories.Queries.GetAllWorkHistories;
 using Application.Features.WorkHistories.Queries.GetSurveySchedule;
 using Application.Features.WorkHistories.Queries.GetSurveyScheduleForLessor;
 using Application.Features.WorkHistories.Queries.GetViewingScheduleForBroker;
@@ -18,6 +19,11 @@ public class WorkHistory : IEndpointGroup
             .RequireAuthorization("Surveyor")
             .Produces(StatusCodes.Status204NoContent)
             .RequireRateLimiting("post");
+
+        groupBuilder.MapGet(GetAllWorkHistories, "all-work-histories")
+            .RequireAuthorization("Manager")
+            .Produces<List<AllWorkHistoryVm>>()
+            .RequireRateLimiting("get");
 
         groupBuilder.MapGet(GetSurveyScheduleForLessor, "survey-schedule/lessor")
             .RequireAuthorization("Lessor")
@@ -63,6 +69,13 @@ public class WorkHistory : IEndpointGroup
     {
         await sender.Send(command, cancellationToken);
         return Results.NoContent();
+    }
+
+    [EndpointSummary("Get all work histories")]
+    public static async Task<IResult> GetAllWorkHistories(ISender sender, CancellationToken cancellationToken)
+    {
+        List<AllWorkHistoryVm> workHistories = await sender.Send(new GetAllWorkHistoriesQuery(), cancellationToken);
+        return Results.Ok(workHistories);
     }
 
     [EndpointSummary("Get survey schedule for lessor")]

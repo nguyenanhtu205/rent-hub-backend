@@ -1,6 +1,6 @@
-﻿namespace Application.Features.Properties.Queries.GetAllProperties;
+﻿namespace Application.Features.Properties.Queries.GetFeaturedProperties;
 
-public class AllPropertyDto
+public class FeaturedPropertyDto
 {
     public int Id { get; init; }
 
@@ -20,7 +20,7 @@ public class AllPropertyDto
     {
         public Mapping()
         {
-            CreateMap<Property, AllPropertyDto>();
+            CreateMap<Property, FeaturedPropertyDto>();
         }
     }
 }
