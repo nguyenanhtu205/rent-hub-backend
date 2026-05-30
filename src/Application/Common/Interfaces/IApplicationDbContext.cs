@@ -6,6 +6,8 @@ public interface IApplicationDbContext
 {
     DbSet<Account> Accounts { get; }
     
+    DbSet<AuditLog> AuditLogs { get; }
+    
     DbSet<ConsignmentContract> ConsignmentContracts { get; }
     
     DbSet<ConsignmentContractDocument> ConsignmentContractDocuments { get; }

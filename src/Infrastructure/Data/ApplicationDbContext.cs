@@ -7,6 +7,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Account> Accounts => Set<Account>();
     
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    
     public DbSet<ConsignmentContract> ConsignmentContracts => Set<ConsignmentContract>();
     
     public DbSet<ConsignmentContractDocument> ConsignmentContractDocuments => Set<ConsignmentContractDocument>();
