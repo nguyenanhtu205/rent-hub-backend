@@ -10,6 +10,7 @@ public class GetAuditLogQueryHandler(IApplicationDbContext context)
     public async Task<List<AuditLogDto>> Handle(GetAuditLogQuery request, CancellationToken cancellationToken)
     {
         return await context.AuditLogs
+            .AsNoTracking()
             .OrderByDescending(x => x.CreatedAt)
             .Select(x => new AuditLogDto(
                 x.RequestName,
