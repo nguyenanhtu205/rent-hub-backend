@@ -26,7 +26,7 @@ public class GetPropertyByFilterQueryHandler(IApplicationDbContext context, IMap
         if (!string.IsNullOrWhiteSpace(request.Query))
         {
             propertiesQuery = propertiesQuery.Where(p =>
-                p.Address.Contains(request.Query, StringComparison.OrdinalIgnoreCase));
+                p.Address.Contains(request.Query)); 
         }
 
         List<FilterPropertyDto> propertyDto = await propertiesQuery
