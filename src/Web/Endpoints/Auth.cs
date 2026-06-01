@@ -3,6 +3,7 @@ using Application.Features.Auth.Commands.Logout;
 using Application.Features.Auth.Commands.RefreshAccessToken;
 using Application.Features.Auth.Commands.Register;
 using Application.Features.Auth.Commands.RegisterForStaff;
+using Application.Features.Auth.Commands.UpdateInfo;
 
 namespace Web.Endpoints;
 
@@ -32,6 +33,10 @@ public class Auth : IEndpointGroup
         groupBuilder.MapPost(RefreshAccessToken, "refresh-token")
             .Produces<AccessTokenResponse>()
             .RequireRateLimiting("post");
+
+        groupBuilder.MapPatch(UpdateInfo, "update-info")
+            .RequireAuthorization()
+            .RequireRateLimiting("put");
     }
 
     private static CookieOptions GetRefreshTokenCookieOptions(IWebHostEnvironment env)
@@ -105,5 +110,13 @@ public class Auth : IEndpointGroup
         httpContext.Response.Cookies.Append("refreshToken", result.RefreshToken, GetRefreshTokenCookieOptions(env));
 
         return Results.Ok(new { result.AccessToken });
+    }
+
+    [EndpointSummary("Update account info")]
+    public static async Task<IResult> UpdateInfo(UpdateInfoCommand command, ISender sender,
+        CancellationToken cancellationToken)
+    {
+        await sender.Send(command, cancellationToken);
+        return Results.NoContent();
     }
 }
