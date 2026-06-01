@@ -20,11 +20,21 @@ public class LoggingBehaviour<TRequest>(
                 requestName, userId, request);
         }
 
+        string payload;
+        try
+        {
+            payload = JsonSerializer.Serialize(request);
+        }
+        catch
+        {
+            payload = $"Cannot serialize {requestName}";
+        }
+
         AuditLog auditLog = new()
         {
             RequestName = requestName,
             UserId = string.IsNullOrEmpty(userId) ? null : userId,
-            RequestPayload = JsonSerializer.Serialize(request)
+            RequestPayload = payload
         };
 
         context.AuditLogs.Add(auditLog);
